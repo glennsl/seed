@@ -1,11 +1,26 @@
 //! This file contains interactions with `web_sys`.
 
 use super::Namespace;
+use crate::util;
 use crate::virtual_dom::{At, AtValue, Attrs, El, Mailbox, Node, Style, Text};
 use std::borrow::Cow;
 use std::cmp::Ordering;
 use wasm_bindgen::JsCast;
 use web_sys::Document;
+
+pub fn render<Ms>(node: Node<Ms>) -> Option<web_sys::Node> {
+    match node {
+        Node::Element(mut el) => {
+            assign_ws_nodes_to_el(&util::document(), &mut el);
+            el.node_ws
+        }
+        Node::Text(mut text) => {
+            assign_ws_nodes_to_text(&util::document(), &mut text);
+            text.node_ws
+        }
+        _ => None,
+    }
+}
 
 /// Convenience function to reduce repetition
 fn set_style(el_ws: &web_sys::Node, style: &Style) {
