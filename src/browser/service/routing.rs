@@ -1,5 +1,5 @@
 use super::super::{
-    util::{self, ClosureNew},
+    util::{self},
     Url,
 };
 use crate::app::{subs, Notification};
@@ -83,7 +83,7 @@ pub fn url_request_handler(
 // so we can prevent page refresh for internal links, and route internally.  Run this on load.
 #[allow(clippy::option_map_unit_fn)]
 pub fn setup_link_listener(notify: impl Fn(Notification) + 'static) {
-    let closure = Closure::new(move |event: web_sys::Event| {
+    let closure = Closure::<dyn Fn(web_sys::Event) -> _>::new(move |event: web_sys::Event| {
         event.target()
             .and_then(|et| et.dyn_into::<web_sys::Element>().ok())
             .and_then(|el| el.closest("a[href]").ok().flatten())
